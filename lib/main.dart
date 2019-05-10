@@ -1,10 +1,15 @@
+import 'dart:async';
+
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
 
 class ToDo {
-    String title;
-    bool done;
+    final int id;
+    final String title;
+    final bool done;
 
-    ToDo({this.title, this.done});
+    ToDo({this.title, this.done, this.id});
 }
 
 void main() {
@@ -13,9 +18,7 @@ void main() {
             title: 'To-Do List',
             home: ToDoList(
                 todos: <ToDo>[
-                    ToDo(title: 'Eat', done: false),
-                    ToDo(title: 'Sleep', done: false),
-                    ToDo(title: 'Repeat', done: false),
+                    ToDo(id: 0, title: 'Sleep', done: false),
                 ],
             ),
         )
@@ -37,7 +40,7 @@ class _ToDoListState extends State<ToDoList> {
     void addToDo(String text) {
         setState(() {
             todos.add(
-                ToDo(title: text, done: false)
+                ToDo(title: text, done: false, id: todos.length)
             );
         });
     }
@@ -52,7 +55,8 @@ class _ToDoListState extends State<ToDoList> {
         setState(() {
             todos[i] = ToDo(
                 title: todos[i].title,
-                done: !todos[i].done
+                done: !todos[i].done,
+                id: todos[i].id
             );
         });
     }
@@ -61,7 +65,8 @@ class _ToDoListState extends State<ToDoList> {
         setState(() {
             todos[i] = ToDo(
                 title: newValue,
-                done: todos[i].done
+                done: todos[i].done,
+                id: todos[i].id
             );
         });
     }
