@@ -75,6 +75,7 @@ class _ToDoListState extends State<ToDoList> {
     Widget buildBody(BuildContext context) {
         if (todos.length > 0) {
             return ListView.builder(
+                padding: EdgeInsets.only(top: 8.0),
                 itemCount: todos.length,
                 itemBuilder: (BuildContext context, int index) {
                     return ToDoListItem(
@@ -162,7 +163,7 @@ class ToDoListItem extends StatelessWidget {
                                 onChangeDone(todo.id);
                             },
                             child: Text(
-                                '${todo.id}. ${todo.title}',
+                                todo.title,
                                 style:  _getTextStyle(context)
                             ),
                         )
