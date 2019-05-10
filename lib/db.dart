@@ -13,7 +13,7 @@ class DB {
             join(await getDatabasesPath(), 'todo_database.db'),
             onCreate: (db, version) {
                 return db.execute(
-                    "CREATE TABLE todos(id INTEGER AUTOINCREMENT PRIMARY KEY, title TEXT, done INT)",
+                    "CREATE TABLE todos(id INTEGER PRIMARY KEY, title TEXT, done INT)",
                 );
             },
             version: 1,
