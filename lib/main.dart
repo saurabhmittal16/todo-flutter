@@ -1,14 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-    runApp(
-        MaterialApp(
-            title: 'To-Do List',
-            home: MyApp(),
-        )
-    );
-}
-
 class ToDo {
     String title;
     bool done;
@@ -16,34 +7,19 @@ class ToDo {
     ToDo({this.title, this.done});
 }
 
-class MyApp extends StatelessWidget {
-    @override
-    Widget build(BuildContext context) {
-        return Scaffold(
-            appBar: AppBar(
-                title: Text('To-Do App'),
-                actions: <Widget>[
-                    IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                            print('Add new to-do');
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => NewToDoListItem())
-                            );
-                        },
-                    )
-                ],
-            ),
-            body: ToDoList(
+void main() {
+    runApp(
+        MaterialApp(
+            title: 'To-Do List',
+            home: ToDoList(
                 todos: <ToDo>[
                     ToDo(title: 'Eat', done: false),
                     ToDo(title: 'Sleep', done: false),
                     ToDo(title: 'Repeat', done: false),
                 ],
-            )
-        );
-    }
+            ),
+        )
+    );
 }
 
 class ToDoList extends StatefulWidget {
@@ -90,8 +66,8 @@ class _ToDoListState extends State<ToDoList> {
         });
     }
 
-    @override
-    Widget build(BuildContext context) {
+    // build body for the home
+    Widget buildBody(BuildContext context) {
         if (todos.length > 0) {
             return ListView.builder(
                 itemCount: todos.length,
@@ -110,10 +86,32 @@ class _ToDoListState extends State<ToDoList> {
                 child: Text('Nothing on your list'),
             );
         }
-        
+    }
+
+    @override
+    Widget build(BuildContext context) {
+        return Scaffold(
+            appBar: AppBar(
+                title: Text('To-Do App'),
+                actions: <Widget>[
+                    IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () async {
+                            String response = await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => NewToDoListItem())
+                            );
+                            if (response != null) {
+                                addToDo(response);
+                            }
+                        },
+                    )
+                ],
+            ),
+            body: buildBody(context)
+        );
     }
 }
-
 
 class ToDoListItem extends StatelessWidget {
     final ToDo todo;
