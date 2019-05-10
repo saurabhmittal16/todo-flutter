@@ -31,17 +31,18 @@ class _ToDoListState extends State<ToDoList> {
     _ToDoListState(this.todos);
 
     void addToDo(String text) {
-        var temp = ToDo(title: text, done: false, id: todos.length);
+        var temp = ToDo(title: text, done: false, id: todos.length+1);
         setState(() {
             todos.add(temp);
         });
         db.insertTodo(temp);
     }
 
-    void removeToDo(int i) {
+    void removeToDo(int id) {
         setState(() {
-            todos.removeAt(i);
+            todos = todos.where((t) => t.id != id).toList();
         });
+        db.deleteToDo(id);
     }
 
     void setToDoStatus(int i) {
@@ -155,7 +156,7 @@ class ToDoListItem extends StatelessWidget {
                                 onChangeDone(index);
                             },
                             child: Text(
-                                todo.title,
+                                '${todo.id}. ${todo.title}',
                                 style:  _getTextStyle(context)
                             ),
                         )
@@ -181,7 +182,7 @@ class ToDoListItem extends StatelessWidget {
                     IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                            onRemove(index);
+                            onRemove(todo.id);
                             // Show snackbar on deleting
                             Scaffold.of(context)
                                 ..removeCurrentSnackBar()
