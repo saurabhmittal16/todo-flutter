@@ -92,18 +92,25 @@ class _ToDoListState extends State<ToDoList> {
 
     @override
     Widget build(BuildContext context) {
-        return ListView.builder(
-            itemCount: todos.length,
-            itemBuilder: (BuildContext context, int index) {
-                return ToDoListItem(
-                    index: index, 
-                    todo: todos[index],
-                    onRemove: removeToDo,
-                    onChangeDone: setToDoStatus,
-                    onUpdate: updateToDo
-                );
-            }
-        );
+        if (todos.length > 0) {
+            return ListView.builder(
+                itemCount: todos.length,
+                itemBuilder: (BuildContext context, int index) {
+                    return ToDoListItem(
+                        index: index, 
+                        todo: todos[index],
+                        onRemove: removeToDo,
+                        onChangeDone: setToDoStatus,
+                        onUpdate: updateToDo
+                    );
+                }
+            );
+        } else {
+            return Center(
+                child: Text('Nothing on your list'),
+            );
+        }
+        
     }
 }
 
