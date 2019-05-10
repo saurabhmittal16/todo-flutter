@@ -31,9 +31,9 @@ class MyApp extends StatelessWidget {
                     )
                 ],
             ),
-            body: Home(
+            body: ToDoList(
                 todos: <ToDo>[
-                    ToDo(title: 'Eat', done: false),
+                    ToDo(title: 'Eat', done: true),
                     ToDo(title: 'Sleep', done: false),
                     ToDo(title: 'Repeat', done: false),
                 ],
@@ -42,17 +42,17 @@ class MyApp extends StatelessWidget {
     }
 }
 
-class Home extends StatefulWidget {
-    Home({this.todos});
+class ToDoList extends StatefulWidget {
+    ToDoList({this.todos});
     final todos;
 
     @override
-    _HomeState createState() => _HomeState(todos);
+    _ToDoListState createState() => _ToDoListState(todos);
 }
 
-class _HomeState extends State<Home> {
+class _ToDoListState extends State<ToDoList> {
     List<ToDo> todos;
-    _HomeState(this.todos);
+    _ToDoListState(this.todos);
 
     void addToDo(String text) {
         setState(() {
@@ -68,20 +68,53 @@ class _HomeState extends State<Home> {
         });
     }
 
+    void setToDoStatus(int i) {
+        setState(() {
+          todos[i] = ToDo(
+            title: todos[i].title,
+            done: !todos[i].done
+          );
+        });
+    }
+
+    Widget buildbody(BuildContext context, int index) {
+        return ToDoListItem(index: index, todo: todos[index],);
+    }
+
     @override
-    Widget build(BuildContext context) { 
-        return ToDoList(todos: this.todos,);
+    Widget build(BuildContext context) {
+        return ListView.builder(
+            itemCount: todos.length,
+            itemBuilder: (BuildContext context, int index) => buildbody(context, index)
+        );
     }
 }
 
-class ToDoList extends StatelessWidget {
-    final List<ToDo> todos;
+class ToDoListItem extends StatelessWidget {
+    final ToDo todo;
+    final int index;
+    ToDoListItem({this.todo, this.index});
 
-    ToDoList({@required this.todos,});
+    TextStyle _getTextStyle(BuildContext context) {
+        if (!todo.done) return null;
 
-    Widget buildbody(BuildContext context, int index) {
+        return TextStyle(
+            color: Colors.black54,
+            decoration: TextDecoration.lineThrough,
+        );
+    }
+
+    Color _getColor(BuildContext context) {
+        return todo.done ? Colors.black54 : Theme.of(context).primaryColor;
+    }
+
+    @override
+    Widget build(BuildContext context) {
         return ListTile(
-            leading: CircleAvatar(child: Text(todos[index].title[0]),),
+            leading: CircleAvatar(
+                child: Text(todo.title[0]),
+                backgroundColor: _getColor(context),
+            ),
             title: Row(
                 key: Key('$index'),
                 children: <Widget>[
@@ -90,7 +123,10 @@ class ToDoList extends StatelessWidget {
                             onTap: () {
                                 print('Set $index');
                             },
-                            child: Text(todos[index].title),
+                            child: Text(
+                                todo.title,
+                                style:  _getTextStyle(context)
+                            ),
                         )
                     ),
                     IconButton(
@@ -101,14 +137,6 @@ class ToDoList extends StatelessWidget {
                     )
                 ],
             )
-        );
-    }
-
-    @override
-    Widget build(BuildContext context) {
-        return ListView.builder(
-            itemCount: todos.length,
-            itemBuilder: (BuildContext context, int index) => buildbody(context, index)
         );
     }
 }
