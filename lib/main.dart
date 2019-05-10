@@ -138,8 +138,15 @@ class ToDoListItemForm extends StatefulWidget {
 class _ToDoListItemFormState extends State<ToDoListItemForm> {
     final _formKey = GlobalKey<FormState>();
     final String intitialValue;
+    TextEditingController _controller;
 
     _ToDoListItemFormState(this.intitialValue);
+
+    @override
+    void initState() {
+        super.initState();
+        _controller = new TextEditingController(text: intitialValue);
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -151,7 +158,7 @@ class _ToDoListItemFormState extends State<ToDoListItemForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                         TextFormField(
-                            initialValue: intitialValue,
+                            controller: _controller,
                             validator: (value) {
                                 if (value.isEmpty) {
                                     return 'Please enter some text';
@@ -163,7 +170,7 @@ class _ToDoListItemFormState extends State<ToDoListItemForm> {
                             child: RaisedButton(
                                 onPressed: () {
                                     if (_formKey.currentState.validate()) {
-                                        Navigator.pop(context, 'saurabh');
+                                        Navigator.pop(context, _controller.text);
                                     }
                                 },
                                 child: Text('Submit'),
@@ -227,7 +234,6 @@ class ToDoListItem extends StatelessWidget {
                     IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () async {
-                            print('Editing $index');
                             String response = await Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => UpdateToDoListItem(todo.title))
