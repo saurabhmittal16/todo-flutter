@@ -9,6 +9,8 @@ void main() {
     );
 }
 
+typedef void VoidCallback(int i);
+
 class ToDo {
     String title;
     bool done;
@@ -78,7 +80,12 @@ class _ToDoListState extends State<ToDoList> {
     }
 
     Widget buildbody(BuildContext context, int index) {
-        return ToDoListItem(index: index, todo: todos[index],);
+        return ToDoListItem(
+            index: index, 
+            todo: todos[index],
+            onRemove: removeToDo,
+            onChangeDone: setToDoStatus
+        );
     }
 
     @override
@@ -93,7 +100,15 @@ class _ToDoListState extends State<ToDoList> {
 class ToDoListItem extends StatelessWidget {
     final ToDo todo;
     final int index;
-    ToDoListItem({this.todo, this.index});
+    final VoidCallback onRemove;
+    final VoidCallback onChangeDone;
+
+    ToDoListItem({
+        @required this.todo, 
+        @required this.index, 
+        @required this.onRemove,
+        @required this.onChangeDone
+    });
 
     TextStyle _getTextStyle(BuildContext context) {
         if (!todo.done) return null;
@@ -122,6 +137,7 @@ class ToDoListItem extends StatelessWidget {
                         child: GestureDetector(
                             onTap: () {
                                 print('Set $index');
+                                onChangeDone(index);
                             },
                             child: Text(
                                 todo.title,
@@ -133,6 +149,7 @@ class ToDoListItem extends StatelessWidget {
                         icon: Icon(Icons.delete),
                         onPressed: () {
                             print('Deleting $index');
+                            onRemove(index);
                         },
                     )
                 ],
