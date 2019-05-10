@@ -9,8 +9,6 @@ void main() {
     );
 }
 
-typedef void VoidCallback(int i);
-
 class ToDo {
     String title;
     bool done;
@@ -109,6 +107,92 @@ class _ToDoListState extends State<ToDoList> {
     }
 }
 
+
+class ToDoListItem extends StatelessWidget {
+    final ToDo todo;
+    final int index;
+    final onRemove;
+    final onChangeDone;
+    final onUpdate;
+
+    ToDoListItem({
+        @required this.todo, 
+        @required this.index, 
+        @required this.onRemove,
+        @required this.onChangeDone,
+        @required this.onUpdate
+    });
+
+    TextStyle _getTextStyle(BuildContext context) {
+        if (!todo.done) return null;
+
+        return TextStyle(
+            color: Colors.black54,
+            decoration: TextDecoration.lineThrough,
+        );
+    }
+
+    Color _getColor(BuildContext context) {
+        return todo.done ? Colors.black54 : Theme.of(context).primaryColor;
+    }
+
+    @override
+    Widget build(BuildContext context) {
+        return ListTile(
+            leading: CircleAvatar(
+                child: Text(todo.title[0]),
+                backgroundColor: _getColor(context),
+            ),
+            title: Row(
+                key: Key('$index'),
+                children: <Widget>[
+                    Expanded(
+                        child: GestureDetector(
+                            onTap: () {
+                                onChangeDone(index);
+                            },
+                            child: Text(
+                                todo.title,
+                                style:  _getTextStyle(context)
+                            ),
+                        )
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () async {
+                            String response = await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => UpdateToDoListItem(todo.title))
+                            );
+                            if (response != null) {
+                                onUpdate(index, response);
+                                // Show snackbar on updating
+                                Scaffold.of(context)
+                                    ..removeCurrentSnackBar()
+                                    ..showSnackBar(SnackBar(
+                                        content: Text('Updated'),
+                                    ));
+                            }
+                        },
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                            onRemove(index);
+                            // Show snackbar on deleting
+                            Scaffold.of(context)
+                                ..removeCurrentSnackBar()
+                                ..showSnackBar(SnackBar(
+                                    content: Text('Deleted'),
+                                ));
+                        },
+                    )
+                ],
+            )
+        );
+    }
+}
+
 class NewToDoListItem extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
@@ -135,7 +219,6 @@ class UpdateToDoListItem extends StatelessWidget {
         );
     }
 }
-
 
 class ToDoListItemForm extends StatefulWidget {
     final String initialValue;
@@ -189,91 +272,6 @@ class _ToDoListItemFormState extends State<ToDoListItemForm> {
                     ],
                 ),
             ),
-        );
-    }
-}
-
-class ToDoListItem extends StatelessWidget {
-    final ToDo todo;
-    final int index;
-    final VoidCallback onRemove;
-    final VoidCallback onChangeDone;
-    final onUpdate;
-
-    ToDoListItem({
-        @required this.todo, 
-        @required this.index, 
-        @required this.onRemove,
-        @required this.onChangeDone,
-        @required this.onUpdate
-    });
-
-    TextStyle _getTextStyle(BuildContext context) {
-        if (!todo.done) return null;
-
-        return TextStyle(
-            color: Colors.black54,
-            decoration: TextDecoration.lineThrough,
-        );
-    }
-
-    Color _getColor(BuildContext context) {
-        return todo.done ? Colors.black54 : Theme.of(context).primaryColor;
-    }
-
-    @override
-    Widget build(BuildContext context) {
-        return ListTile(
-            leading: CircleAvatar(
-                child: Text(todo.title[0]),
-                backgroundColor: _getColor(context),
-            ),
-            title: Row(
-                key: Key('$index'),
-                children: <Widget>[
-                    Expanded(
-                        child: GestureDetector(
-                            onTap: () {
-                                print('Set $index');
-                                onChangeDone(index);
-                            },
-                            child: Text(
-                                todo.title,
-                                style:  _getTextStyle(context)
-                            ),
-                        )
-                    ),
-                    IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () async {
-                            String response = await Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => UpdateToDoListItem(todo.title))
-                            );
-                            if (response != null) {
-                                onUpdate(index, response);
-                                // Show snackbar on updating
-                                Scaffold.of(context)
-                                    ..removeCurrentSnackBar()
-                                    ..showSnackBar(SnackBar(
-                                        content: Text('Updated'),
-                                    ));
-                            }
-                        },
-                    ),
-                    IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                            onRemove(index);
-                            Scaffold.of(context)
-                                ..removeCurrentSnackBar()
-                                ..showSnackBar(SnackBar(
-                                    content: Text('Deleted'),
-                                ));
-                        },
-                    )
-                ],
-            )
         );
     }
 }
