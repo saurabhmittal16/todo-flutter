@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
             ),
             body: ToDoList(
                 todos: <ToDo>[
-                    ToDo(title: 'Eat', done: true),
+                    ToDo(title: 'Eat', done: false),
                     ToDo(title: 'Sleep', done: false),
                     ToDo(title: 'Repeat', done: false),
                 ],
@@ -79,20 +79,18 @@ class _ToDoListState extends State<ToDoList> {
         });
     }
 
-    Widget buildbody(BuildContext context, int index) {
-        return ToDoListItem(
-            index: index, 
-            todo: todos[index],
-            onRemove: removeToDo,
-            onChangeDone: setToDoStatus
-        );
-    }
-
     @override
     Widget build(BuildContext context) {
         return ListView.builder(
             itemCount: todos.length,
-            itemBuilder: (BuildContext context, int index) => buildbody(context, index)
+            itemBuilder: (BuildContext context, int index) {
+                return ToDoListItem(
+                    index: index, 
+                    todo: todos[index],
+                    onRemove: removeToDo,
+                    onChangeDone: setToDoStatus
+                );
+            }
         );
     }
 }
