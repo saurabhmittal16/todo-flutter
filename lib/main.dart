@@ -45,24 +45,30 @@ class _ToDoListState extends State<ToDoList> {
         db.deleteToDo(id);
     }
 
-    void setToDoStatus(int i) {
-        setState(() {
-            todos[i] = ToDo(
-                title: todos[i].title,
-                done: !todos[i].done,
-                id: todos[i].id
-            );
-        });
+    void setToDoStatus(int id) {
+        int i;
+        for(i=0; i<todos.length; i++) {
+            if (todos[i].id == id) {
+                setState(() {
+                    todos[i].toggleDone();
+                });
+                break;
+            }
+        }
+        db.updateTodo(todos[i]);
     }
 
-    void updateToDo(int i, String newValue) {
-        setState(() {
-            todos[i] = ToDo(
-                title: newValue,
-                done: todos[i].done,
-                id: todos[i].id
-            );
-        });
+    void updateToDo(int id, String newValue) {
+        int i;
+        for(i=0; i<todos.length; i++) {
+            if (todos[i].id == id) {
+                setState(() {
+                    todos[i].setTitle(newValue);
+                });
+                break;
+            }
+        }
+        db.updateTodo(todos[i]);
     }
 
     // build body for the home
@@ -153,7 +159,7 @@ class ToDoListItem extends StatelessWidget {
                     Expanded(
                         child: GestureDetector(
                             onTap: () {
-                                onChangeDone(index);
+                                onChangeDone(todo.id);
                             },
                             child: Text(
                                 '${todo.id}. ${todo.title}',
@@ -169,7 +175,7 @@ class ToDoListItem extends StatelessWidget {
                                 MaterialPageRoute(builder: (context) => UpdateToDoListItem(todo.title))
                             );
                             if (response != null) {
-                                onUpdate(index, response);
+                                onUpdate(todo.id, response);
                                 // Show snackbar on updating
                                 Scaffold.of(context)
                                     ..removeCurrentSnackBar()

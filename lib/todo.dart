@@ -1,7 +1,7 @@
 class ToDo {
     final int id;
-    final String title;
-    final bool done;
+    String title;
+    bool done;
 
     ToDo({this.title, this.done, this.id});
 
@@ -10,5 +10,13 @@ class ToDo {
             'title': title,
             'done': done ? 1 : 0,
         };
+    }
+
+    void setTitle(String newTitle) {
+        this.title = newTitle;
+    }
+
+    void toggleDone() {
+        this.done = !this.done;
     }
 }
