@@ -29,6 +29,10 @@ class MyApp extends StatelessWidget {
                         icon: Icon(Icons.add),
                         onPressed: () {
                             print('Add new to-do');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => NewToDoListItem())
+                            );
                         },
                     )
                 ],
@@ -95,6 +99,83 @@ class _ToDoListState extends State<ToDoList> {
     }
 }
 
+class NewToDoListItem extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+        return Scaffold(
+            appBar: AppBar(
+                title: Text('Add To-Do'),
+            ),
+            body: ToDoListItemForm(null)
+        );
+    }
+}
+
+class UpdateToDoListItem extends StatelessWidget {
+    final String initialValue;
+    UpdateToDoListItem(this.initialValue);
+
+    @override
+    Widget build(BuildContext context) {
+        return Scaffold(
+            appBar: AppBar(
+                title: Text('Update To-Do'),
+            ),
+            body: ToDoListItemForm(initialValue)
+        );
+    }
+}
+
+
+class ToDoListItemForm extends StatefulWidget {
+    final String initialValue;
+    ToDoListItemForm(this.initialValue);
+
+    @override
+    _ToDoListItemFormState createState() => _ToDoListItemFormState(this.initialValue);
+}
+
+class _ToDoListItemFormState extends State<ToDoListItemForm> {
+    final _formKey = GlobalKey<FormState>();
+    final String intitialValue;
+
+    _ToDoListItemFormState(this.intitialValue);
+
+    @override
+    Widget build(BuildContext context) {
+        return Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Form(
+                key: _formKey,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                        TextFormField(
+                            initialValue: intitialValue,
+                            validator: (value) {
+                                if (value.isEmpty) {
+                                    return 'Please enter some text';
+                                }
+                            },
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: RaisedButton(
+                                onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                        Navigator.pop(context, 'saurabh');
+                                    }
+                                },
+                                child: Text('Submit'),
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        );
+    }
+}
+
 class ToDoListItem extends StatelessWidget {
     final ToDo todo;
     final int index;
@@ -142,6 +223,17 @@ class ToDoListItem extends StatelessWidget {
                                 style:  _getTextStyle(context)
                             ),
                         )
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () async {
+                            print('Editing $index');
+                            String response = await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => UpdateToDoListItem(todo.title))
+                            );
+                            print(response);
+                        },
                     ),
                     IconButton(
                         icon: Icon(Icons.delete),
