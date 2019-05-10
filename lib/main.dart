@@ -1,25 +1,18 @@
-import 'dart:async';
-
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
 
-class ToDo {
-    final int id;
-    final String title;
-    final bool done;
+import 'todo.dart';
+import 'db.dart';
 
-    ToDo({this.title, this.done, this.id});
-}
+var db = new DB();
 
-void main() {
+void main() async {
+    await db.init();
+
     runApp(
         MaterialApp(
             title: 'To-Do List',
             home: ToDoList(
-                todos: <ToDo>[
-                    ToDo(id: 0, title: 'Sleep', done: false),
-                ],
+                todos: await db.todos(),
             ),
         )
     );
@@ -38,11 +31,11 @@ class _ToDoListState extends State<ToDoList> {
     _ToDoListState(this.todos);
 
     void addToDo(String text) {
+        var temp = ToDo(title: text, done: false, id: todos.length);
         setState(() {
-            todos.add(
-                ToDo(title: text, done: false, id: todos.length)
-            );
+            todos.add(temp);
         });
+        db.insertTodo(temp);
     }
 
     void removeToDo(int i) {
