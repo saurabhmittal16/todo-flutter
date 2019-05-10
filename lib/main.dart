@@ -76,10 +76,19 @@ class _ToDoListState extends State<ToDoList> {
 
     void setToDoStatus(int i) {
         setState(() {
-          todos[i] = ToDo(
-            title: todos[i].title,
-            done: !todos[i].done
-          );
+            todos[i] = ToDo(
+                title: todos[i].title,
+                done: !todos[i].done
+            );
+        });
+    }
+
+    void updateToDo(int i, String newValue) {
+        setState(() {
+            todos[i] = ToDo(
+                title: newValue,
+                done: todos[i].done
+            );
         });
     }
 
@@ -92,7 +101,8 @@ class _ToDoListState extends State<ToDoList> {
                     index: index, 
                     todo: todos[index],
                     onRemove: removeToDo,
-                    onChangeDone: setToDoStatus
+                    onChangeDone: setToDoStatus,
+                    onUpdate: updateToDo
                 );
             }
         );
@@ -188,12 +198,14 @@ class ToDoListItem extends StatelessWidget {
     final int index;
     final VoidCallback onRemove;
     final VoidCallback onChangeDone;
+    final onUpdate;
 
     ToDoListItem({
         @required this.todo, 
         @required this.index, 
         @required this.onRemove,
-        @required this.onChangeDone
+        @required this.onChangeDone,
+        @required this.onUpdate
     });
 
     TextStyle _getTextStyle(BuildContext context) {
@@ -238,14 +250,26 @@ class ToDoListItem extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(builder: (context) => UpdateToDoListItem(todo.title))
                             );
-                            print(response);
+                            if (response != null) {
+                                onUpdate(index, response);
+                                // Show snackbar on updating
+                                Scaffold.of(context)
+                                    ..removeCurrentSnackBar()
+                                    ..showSnackBar(SnackBar(
+                                        content: Text('Updated'),
+                                    ));
+                            }
                         },
                     ),
                     IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                            print('Deleting $index');
                             onRemove(index);
+                            Scaffold.of(context)
+                                ..removeCurrentSnackBar()
+                                ..showSnackBar(SnackBar(
+                                    content: Text('Deleted'),
+                                ));
                         },
                     )
                 ],
